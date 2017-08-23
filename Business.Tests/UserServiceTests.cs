@@ -33,7 +33,10 @@ namespace Business.Tests
 				.IsNotNull()
 				.And
 				.HasElementThatMatches(u => u.DatavivAccessAllowed);
-			
+
+			Check.That(users.Extracting("Name"))
+				.ContainsExactly("Paul", "Pierre");
+
 			_userRepository.Verify(r => r.GetAll(), Times.Once);
 		}
 
