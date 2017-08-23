@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace DAL
 {
-	public static class UserRepository
+	public class UserRepository : IUserRepository
 	{
 		private const string Host = ".";
 		private const string InstanceName = "SQLEXPRESS";
 		private const string DbName = "DojoMoq";
 
-		private static string _connectionString => $@"Data Source={Host}\{InstanceName};Initial Catalog={DbName};Integrated Security=SSPI;";
+		private string _connectionString => $@"Data Source={Host}\{InstanceName};Initial Catalog={DbName};Integrated Security=SSPI;";
+		
 
-
-		public static int Add(User user)
+		public int Add(User user)
 		{
 			return OpenCloseConnection<int>(command =>
 			{
@@ -29,7 +29,7 @@ namespace DAL
 			});
 		}
 
-		public static IEnumerable<User> GetAll()
+		public IEnumerable<User> GetAll()
 		{
 			return OpenCloseConnection<IEnumerable<User>>(command =>
 			{
@@ -47,7 +47,7 @@ namespace DAL
 			});
 		}
 
-		public static User FindById(int id)
+		public User FindById(int id)
 		{
 			return OpenCloseConnection<User>(command =>
 			{
@@ -67,7 +67,7 @@ namespace DAL
 			});
 		}
 
-		private static T OpenCloseConnection<T>(Func<SqlCommand, T> action)
+		private T OpenCloseConnection<T>(Func<SqlCommand, T> action)
 		{
 			using (var connection = new SqlConnection(_connectionString))
 			using (var command = connection.CreateCommand())

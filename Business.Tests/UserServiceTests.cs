@@ -1,4 +1,5 @@
-﻿using NFluent;
+﻿using DAL;
+using NFluent;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace Business.Tests
 		[SetUp]
 		public void Initialize()
 		{
-			_userService = new UserService();
+			var repository = new UserRepository();
+			_userService = new UserService(repository);
 		}
 
 		[Test]

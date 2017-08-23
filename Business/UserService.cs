@@ -10,19 +10,26 @@ namespace Business
 {
 	public class UserService
 	{
+		private readonly IUserRepository _userRepository;
+
+		public UserService(IUserRepository userRepository)
+		{
+			_userRepository = userRepository;
+		}
+
 		public void Add(User user)
 		{
-			UserRepository.Add(user);
+			_userRepository.Add(user);
 		}
 
 		public User FindById(int id)
 		{
-			return UserRepository.FindById(id);
+			return _userRepository.FindById(id);
 		}
 
 		public IEnumerable<User> FindDatavivAccessAllowed()
 		{
-			var users = UserRepository.GetAll();
+			var users = _userRepository.GetAll();
 
 			return users
 					.Where(u => u.DatavivAccessAllowed)

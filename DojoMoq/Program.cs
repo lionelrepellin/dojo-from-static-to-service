@@ -1,4 +1,5 @@
 ﻿using Business;
+using DAL;
 using Entities;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,9 @@ namespace DojoMoq
 	{
 		static void Main(string[] args)
 		{
-			var service = new UserService();
-
+			var repository = new UserRepository();
+			var service = new UserService(repository);
+			
 			var usersToAdd = new List<string>
 			{
 				"Ringo", "Raoul", "Pedro", "Mojito", "Paolo", "Bernardo"
