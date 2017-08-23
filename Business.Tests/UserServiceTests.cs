@@ -1,4 +1,6 @@
 ﻿using DAL;
+using Entities;
+using Moq;
 using NFluent;
 using NUnit.Framework;
 using System;
@@ -11,14 +13,15 @@ namespace Business.Tests
 {
 	[TestFixture]
 	public class UserServiceTests
-    {
+	{
 		private UserService _userService;
+		private Mock<IUserRepository> _userRepository;
 
 		[SetUp]
 		public void Initialize()
 		{
-			var repository = new UserRepository();
-			_userService = new UserService(repository);
+			_userRepository = CreateUserRepositoryMock();
+			_userService = new UserService(_userRepository.Object);
 		}
 
 		[Test]
@@ -30,6 +33,26 @@ namespace Business.Tests
 				.IsNotNull()
 				.And
 				.HasElementThatMatches(u => u.DatavivAccessAllowed);
+			
+			_userRepository.Verify(r => r.GetAll(), Times.Once);
+		}
+
+		private Mock<IUserRepository> CreateUserRepositoryMock()
+		{
+			var users = new List<User>
+			{
+				new User { Id = 1, Name = "Pierre", DatavivAccessAllowed = true },
+				new User { Id = 2, Name = "Paul", DatavivAccessAllowed = true },
+				new User { Id = 3, Name = "Jacques", DatavivAccessAllowed = false }
+			};
+
+			var repository = new Mock<IUserRepository>();
+
+			repository
+				.Setup(r => r.GetAll())
+				.Returns(users);
+
+			return repository;
 		}
 	}
 }
