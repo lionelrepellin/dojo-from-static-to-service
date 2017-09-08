@@ -29,10 +29,7 @@ namespace Business.Tests
 		{
 			var users = _userService.FindDatavivAccessAllowed();
 
-			Check.That(users)
-				.IsNotNull()
-				.And
-				.HasElementThatMatches(u => u.DatavivAccessAllowed);
+			Check.That(users.All(u => u.DatavivAccessAllowed));				
 
 			Check.That(users.Extracting("Name"))
 				.ContainsExactly("Paul", "Pierre");

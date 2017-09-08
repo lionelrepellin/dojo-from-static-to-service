@@ -1,7 +1,6 @@
 ﻿using Entities;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,83 +9,29 @@ namespace DAL
 {
 	public class UserRepository : IUserRepository
 	{
-		private const string Host = ".";
-		private const string InstanceName = "SQLEXPRESS";
-		private const string DbName = "DojoMoq";
-
-		private string _connectionString => $@"Data Source={Host}\{InstanceName};Initial Catalog={DbName};Integrated Security=SSPI;";
-		
-
 		public int Add(User user)
 		{
-			return OpenCloseConnection<int>(command =>
+			using (var context = new Context())
 			{
-				command.CommandText = "INSERT utilisateurs(nom, acces_dataviv) VALUES(@name, @dataviv)";
-				command.Parameters.Add(new SqlParameter("@name", user.Name));
-				command.Parameters.Add(new SqlParameter("@dataviv", user.DatavivAccessAllowed));
-
-				return command.ExecuteNonQuery();
-			});
+				context.Users.Add(user);
+				return context.SaveChanges();
+			}
 		}
 
 		public IEnumerable<User> GetAll()
 		{
-			return OpenCloseConnection<IEnumerable<User>>(command =>
+			using (var context = new Context())
 			{
-				var users = new List<User>();
-				command.CommandText = "SELECT id, nom, acces_dataviv FROM utilisateurs";
-
-				using (var dataReader = command.ExecuteReader())
-				{
-					while (dataReader.Read())
-					{
-						users.Add(CreateUserFromReader(dataReader));
-					}
-				}
-				return users;
-			});
+				return context.Users.ToList();
+			}
 		}
 
 		public User FindById(int id)
 		{
-			return OpenCloseConnection<User>(command =>
+			using (var context = new Context())
 			{
-				User user = null;
-
-				command.CommandText = "SELECT id, nom, acces_dataviv FROM utilisateurs WHERE id = @id";
-				command.Parameters.Add(new SqlParameter("@id", id));
-
-				using (var dataReader = command.ExecuteReader())
-				{
-					if (dataReader.Read())
-					{
-						user = CreateUserFromReader(dataReader);
-					}
-				}
-				return user;
-			});
-		}
-
-		private T OpenCloseConnection<T>(Func<SqlCommand, T> action)
-		{
-			using (var connection = new SqlConnection(_connectionString))
-			using (var command = connection.CreateCommand())
-			{
-				connection.Open();
-				T result = action(command);
-				connection.Close();
-				return result;
+				return context.Users.Find(id);
 			}
-		}
-
-		private static User CreateUserFromReader(SqlDataReader dataReader)
-		{
-			return new User
-			{
-				Id = Convert.ToInt32(dataReader["id"].ToString()),
-				Name = dataReader["nom"].ToString(),
-				DatavivAccessAllowed = Convert.ToBoolean(dataReader["acces_dataviv"].ToString())
-			};
 		}
 	}
 }
