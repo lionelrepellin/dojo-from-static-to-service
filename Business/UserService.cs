@@ -8,32 +8,33 @@ using System.Threading.Tasks;
 
 namespace Business
 {
-	public class UserService
-	{
-		private readonly IUserRepository _userRepository;
+    public class UserService
+    {
+        private readonly IUnitOfWork _unitOfWork;
 
-		public UserService(IUserRepository userRepository)
-		{
-			_userRepository = userRepository;
-		}
+        public UserService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-		public void Add(User user)
-		{
-			_userRepository.Add(user);
-		}
+        public void Add(User user)
+        {
+            _unitOfWork.UserRepository.Add(user);
+            _unitOfWork.Save();
+        }
 
-		public User FindById(int id)
-		{
-			return _userRepository.FindById(id);
-		}
+        public User FindById(int id)
+        {
+            return _unitOfWork.UserRepository.FindById(id);
+        }
 
-		public IEnumerable<User> FindDatavivAccessAllowed()
-		{
-			var users = _userRepository.GetAll();
+        public IEnumerable<User> FindDatavivAccessAllowed()
+        {
+            var users = _unitOfWork.UserRepository.Get();
 
-			return users
-					.Where(u => u.DatavivAccessAllowed)
-					.OrderBy(u => u.Name);
-		}
-	}
+            return users
+                    .Where(u => u.DatavivAccessAllowed)
+                    .OrderBy(u => u.Name);
+        }
+    }
 }

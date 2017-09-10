@@ -13,8 +13,9 @@ namespace DojoMoq
 	{
 		static void Main(string[] args)
 		{
-			var repository = new UserRepository();
-			var service = new UserService(repository);
+            var context = new Context();
+            var unitOfWork = new UnitOfWork(context);            
+			var service = new UserService(unitOfWork);
 			
 			var usersToAdd = new List<string>
 			{
